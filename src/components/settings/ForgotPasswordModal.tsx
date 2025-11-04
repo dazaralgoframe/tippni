@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AlertCircle, CheckCircle, Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { DialogOverlay } from "@radix-ui/react-dialog"
 
 interface ForgotPasswordModalProps {
   open: boolean
@@ -107,6 +108,7 @@ export default function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+    <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity data-[state=open]:animate-in data-[state=closed]:animate-out" />
       <DialogContent className="sm:max-w-md bg-modal border border-border text-foreground transition-all duration-300">
         <DialogHeader>
           <div className="flex items-center gap-2">

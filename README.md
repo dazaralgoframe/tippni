@@ -54,3 +54,19 @@ SECONDARY_COLOR = #F1F1F1
 font-family: Poppins;
 font-size = 10 || 12 || 14 || 16
 button = 101*44
+
+
+login .. https://api.tippni.com/api/v1/auth/register
+request body
+{
+  "email": "string",
+  "username": "string",
+  "password": "string"
+}
+response
+register .. https://api.tippni.com/api/v1/auth/authenticate
+{
+  "jwt": "string"
+}
+https://api.tippni.com/api/v1/auth/validate/{jwt}
+

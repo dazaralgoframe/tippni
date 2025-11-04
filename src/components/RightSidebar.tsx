@@ -40,7 +40,7 @@ export default function RightSidebar() {
       <Trending />
       <PopularUser />
       {/* Popular users / Who to follow */}
-      <ThemeToggle />
+      {/* <ThemeToggle /> */}
     </div>
   )
 }

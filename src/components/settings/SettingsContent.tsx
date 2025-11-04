@@ -6,6 +6,9 @@ import { Switch } from "@/components/ui/switch"
 import { useState } from "react"
 import { Lock, Bell, Eye, LogOut, Moon, Scale } from "lucide-react"
 import ChangePasswordModal from "./ChangePasswordModal"
+import DeactivateAccountModal from "./DeactivateAccountModal"
+import DeleteAccountModal from "./DeleteAccountModal"
+// import Enable2FAModal from "./Enable2FAModal"
 
 interface SettingsContentProps {
   activeTab: string
@@ -18,6 +21,10 @@ export default function SettingsContent({ activeTab, onTabChange }: SettingsCont
   const [darkMode, setDarkMode] = useState(true)
   const [textSize, setTextSize] = useState("medium")
   const [changePasswordOpen, setChangePasswordOpen] = useState(false)
+  const [enable2FAOpen, setEnable2FAOpen] = useState(false)
+  const [deactivateAccountOpen, setDeactivateAccountOpen] = useState(false)
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false)
+  const [readReceipt, setReadReceipt] = useState(false)
 
   const tabs = [
     { id: "account", label: "Account", icon: Lock },
@@ -71,10 +78,12 @@ export default function SettingsContent({ activeTab, onTabChange }: SettingsCont
               </Button>
             </Card>
 
-            <Card className="p-4 gap-1 border-none bg-secondary">
+            <Card className="p-4 gap-1 border-none bg-secondary hidden">
               <h3 className="font-semibold mb-2">Two-Factor Authentication</h3>
               <p className="text-sm text-muted-foreground mb-4">Add an extra layer of security to your account</p>
-              <Button variant="outline" className="w-fit bg-transparent rounded-full cursor-pointer">
+              <Button variant="outline" className="w-fit bg-transparent rounded-full cursor-pointer" 
+              onClick={() => setEnable2FAOpen(true)}
+              >
                 Enable 2FA
               </Button>
             </Card>
@@ -84,7 +93,7 @@ export default function SettingsContent({ activeTab, onTabChange }: SettingsCont
               <p className="text-sm text-muted-foreground mb-4">
                 Once you deactivate your account, there is no going back. Please be certain.
               </p>
-              <Button variant="outline" className="w-fit bg-transparent rounded-full text-red-400 cursor-pointer">
+              <Button variant="outline" className="w-fit bg-transparent rounded-full text-red-400 cursor-pointer" onClick={()=>setDeactivateAccountOpen(true)}>
                 Deactivate Account
               </Button>
             </Card>
@@ -93,7 +102,7 @@ export default function SettingsContent({ activeTab, onTabChange }: SettingsCont
               <p className="text-sm mb-4 text-white">
                 Once you delete your account, all data will erase permanently and you won't get it back.
               </p>
-              <Button variant="outline" className="w-fit bg-transparent text-white rounded-full cursor-pointer">
+              <Button variant="outline" className="w-fit bg-transparent text-white rounded-full cursor-pointer" onClick={()=>setDeleteAccountOpen(true)}>
                 Delete Account
               </Button>
             </Card>
@@ -101,42 +110,51 @@ export default function SettingsContent({ activeTab, onTabChange }: SettingsCont
         )}
 
         {activeTab === "privacy" && (
-        //   <div className="space-y-4">
-        //     <Card className="p-4">
-        //       <div className="flex items-center justify-between mb-2">
-        //         <h3 className="font-semibold">Private Account</h3>
-        //         <Switch checked={privateAccount} onCheckedChange={setPrivateAccount} />
-        //       </div>
-        //       <p className="text-sm text-muted-foreground">
-        //         When your account is private, only people you approve can follow you and see your posts.
-        //       </p>
-        //     </Card>
+          <div className="space-y-4">
+            <Card className="p-4 gap-1">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold">Private Account</h3>
+                <Switch checked={privateAccount} onCheckedChange={setPrivateAccount} className="bg-accent" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                When your account is private, only people you approve can follow you and see your posts.
+              </p>
+            </Card>
 
-        //     <Card className="p-4">
-        //       <h3 className="font-semibold mb-2">Blocked Users</h3>
-        //       <p className="text-sm text-muted-foreground mb-4">You have blocked 0 users</p>
-        //       <Button variant="outline" className="w-full bg-transparent">
-        //         Manage Blocked Users
-        //       </Button>
-        //     </Card>
+            <Card className="p-4 gap-1">
+              <h3 className="font-semibold mb-2">Blocked Users</h3>
+              <p className="text-sm text-muted-foreground mb-4">You have blocked 0 users</p>
+              <Button variant="outline" className="w-fit bg-transparent rounded-full">
+                Manage Blocked Users
+              </Button>
+            </Card>
 
-        //     <Card className="p-4">
-        //       <h3 className="font-semibold mb-2">Muted Words</h3>
-        //       <p className="text-sm text-muted-foreground mb-4">You have muted 0 words</p>
-        //       <Button variant="outline" className="w-full bg-transparent">
-        //         Manage Muted Words
-        //       </Button>
-        //     </Card>
+            <Card className="p-4 gap-1">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold">Show read receipts</h3>
+                <Switch checked={readReceipt} onCheckedChange={setReadReceipt} className="bg-accent" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Let people you’re messaging with know when you’ve seen their messages. Read receipts are not shown on message requests
+              </p>
+            </Card>
 
-        //     <Card className="p-4">
-        //       <h3 className="font-semibold mb-2">Allow Messages From</h3>
-        //       <p className="text-sm text-muted-foreground mb-4">Currently: Everyone</p>
-        //       <Button variant="outline" className="w-full bg-transparent">
-        //         Change Settings
-        //       </Button>
-        //     </Card>
-        //   </div>
-        <></>
+            <Card className="p-4 hidden">
+              <h3 className="font-semibold mb-2">Muted Words</h3>
+              <p className="text-sm text-muted-foreground mb-4">You have muted 0 words</p>
+              <Button variant="outline" className="w-full bg-transparent">
+                Manage Muted Words
+              </Button>
+            </Card>
+
+            <Card className="p-4 hidden">
+              <h3 className="font-semibold mb-2">Allow Messages From</h3>
+              <p className="text-sm text-muted-foreground mb-4">Currently: Everyone</p>
+              <Button variant="outline" className="w-full bg-transparent">
+                Change Settings
+              </Button>
+            </Card>
+          </div>
         )}
 
         {activeTab === "display" && (
@@ -234,6 +252,9 @@ export default function SettingsContent({ activeTab, onTabChange }: SettingsCont
         </Button>
       </div>
       <ChangePasswordModal open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
+      {/* <Enable2FAModal open={enable2FAOpen} onOpenChange={setEnable2FAOpen} /> */}
+      <DeactivateAccountModal open={deactivateAccountOpen} onOpenChange={setDeactivateAccountOpen} />
+      <DeleteAccountModal open={deleteAccountOpen} onOpenChange={setDeleteAccountOpen} />
     </div>
   )
 }
