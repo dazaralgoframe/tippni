@@ -1,0 +1,14 @@
+{
+    "signupScreen": {
+        "title": "உங்கள் கணக்கை உருவாக்கவும்",
+        "SignupGoogle": "Google உடன் பதிவு செய்யவும்", 
+        "SignupApple": "Sign up with Apple",
+        "or": "OR",
+        "SignupEmail": "Sign up with Email",
+        "TermService": "Terms of Service",
+        "and": "and",
+        "PrivacyPolicy": "Privacy Policy.",
+        "HaveAccount": "Already have an account?",
+        "SigninButton": "Sign in"
+    }
+}

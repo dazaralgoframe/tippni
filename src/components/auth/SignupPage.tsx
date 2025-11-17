@@ -7,6 +7,7 @@ import { Mail } from "lucide-react"
 import Link from "next/link"
 import SignupModal from "../modals/SignupModal"
 import SigninModal from "../modals/SigninModal"
+import { useTranslation } from "react-i18next"
 
 interface SignupPageProps {
   onSignupGoogle: () => void
@@ -38,10 +39,11 @@ export default function SignupPage({
 }: SignupPageProps) {
   const [signupModalOpen, setSignupModalOpen] = useState(false)
   const [signinModalOpen, setSigninModalOpen] = useState(false)
+  const {t} = useTranslation()
 
   return (
     <div className="max-w-md w-full mx-auto bg-modal text-primary p-8 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Create your account</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">{t('signupScreen.title')}</h2>
 
       {/* OAuth Signup */}
       <div className="space-y-3 mb-4">
@@ -51,7 +53,7 @@ export default function SignupPage({
           className="w-full h-11 rounded-full flex items-center justify-center gap-2"
         >
           <Chrome />
-          <span>Sign up with Google</span>
+          <span>{t('signupScreen.SignupGoogle')}</span>
         </Button>
 
         <Button

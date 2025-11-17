@@ -1,0 +1,14 @@
+{
+    "signupScreen": {
+        "title": "Create your account",
+        "SignupGoogle": "Sign up with Google", 
+        "SignupApple": "Sign up with Apple",
+        "or": "OR",
+        "SignupEmail": "Sign up with Email",
+        "TermService": "Terms of Service",
+        "and": "and",
+        "PrivacyPolicy": "Privacy Policy.",
+        "HaveAccount": "Already have an account?",
+        "SigninButton": "Sign in"
+    }
+}

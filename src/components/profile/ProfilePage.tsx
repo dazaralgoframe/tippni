@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useSession } from "next-auth/react";
 import { Loader } from "../ui/loader";
 import { Edit2 } from "lucide-react";
+import ProfileConnections from "./ProfileConnections";
 
 interface Profile {
   id: string
@@ -25,6 +26,7 @@ interface Profile {
   followingCount?: number
   avatarUrl?: string
   bannerUrl?: string
+  profileId?: string
 }
 
 export default function ProfilePage() {
@@ -34,6 +36,9 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true)
     const [isUploadingBanner, setIsUploadingBanner] = useState(false)
     const fileInputRefBanner = useRef<HTMLInputElement>(null)
+    const [showConnections, setShowConnections] = useState<null | "followers" | "following">(null)
+
+
     const fetchProfile = async () => {
       try {
         if (status === "loading") return
@@ -47,7 +52,7 @@ export default function ProfilePage() {
         
         // ✅ Fetch user profile
         const res = await api.get("/api/v1/profiles/me")
-        console.log('res=>', res);
+        console.log('res profile=>', res);
         
         setProfile(res.data.data || res.data)
         toast.success("✅ Profile loaded successfully!")
@@ -102,39 +107,51 @@ export default function ProfilePage() {
     
     return(
       <main className="col-span-12 lg:col-span-6">
-          <div className="sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+          {showConnections ? (
+            <ProfileConnections
+              type={showConnections}
+              username={profile?.username || ''}
+              onBack={() => setShowConnections(null)}
+              profileId={profile?.profileId || ''}
+            />
+          ) : (
+            <>
+            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
             <ProfileHeader username={profile?.username || ''} />
           </div>
-          <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500 overflow-hidden hidden">
-            <Image width={100} height={100} src="/images/twitter-profile-cover.jpg" alt="Profile cover" className="w-full h-full object-cover" />
-          </div>
-          <div className="h-48 bg-gradient-to-r bg-accent overflow-hidden relative">
-            <Avatar className="w-full h-full object-cover">
-              <AvatarImage src={profile?.bannerUrl} alt={profile?.username} />
-              <AvatarFallback>{"No Banner"}</AvatarFallback>
-            </Avatar>
-            <button
-              onClick={() => fileInputRefBanner.current?.click()}
-              className="absolute bottom-3 right-3 p-2 bg-white rounded-full border border-border shadow-sm hover:bg-accent/10 transition cursor-pointer"
-              disabled={isUploadingBanner}
-            >
-              <Edit2
-                className={`w-4 h-4 ${
-                  isUploadingBanner ? "animate-pulse text-accent" : "text-accent"
-                }`}
-              />
-            </button>
-            <input
-              ref={fileInputRefBanner}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleBannerChange}
-            />
-          </div>
-          <ProfileInfo />
-          <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
-          <ProfilePosts tab={activeTab} />
+              <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500 overflow-hidden hidden">
+                <Image width={100} height={100} src="/images/twitter-profile-cover.jpg" alt="Profile cover" className="w-full h-full object-cover" />
+              </div>
+              <div className="h-48 bg-gradient-to-r bg-accent overflow-hidden relative">
+                <Avatar className="w-full h-full object-cover">
+                  <AvatarImage src={profile?.bannerUrl} alt={profile?.username} />
+                  <AvatarFallback>{"No Banner"}</AvatarFallback>
+                </Avatar>
+                <button
+                  onClick={() => fileInputRefBanner.current?.click()}
+                  className="absolute bottom-3 right-3 p-2 bg-white rounded-full border border-border shadow-sm hover:bg-accent/10 transition cursor-pointer"
+                  disabled={isUploadingBanner}
+                >
+                  <Edit2
+                    className={`w-4 h-4 ${
+                      isUploadingBanner ? "animate-pulse text-accent" : "text-accent"
+                    }`}
+                  />
+                </button>
+                <input
+                  ref={fileInputRefBanner}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleBannerChange}
+                />
+              </div>
+              <ProfileInfo setShowConnections={setShowConnections} />
+              <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
+              <ProfilePosts tab={activeTab} />
+            </>
+          )}
+          
         </main>
     )
 }

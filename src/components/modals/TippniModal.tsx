@@ -30,7 +30,6 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
   const [isPosting, setIsPosting] = useState(false)
   const { data: session } = useSession()
 
-  // ✅ Image upload handler
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -46,7 +45,6 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
     reader.readAsDataURL(file)
   }
 
-  // ✅ Tippni post handler (text + optional image)
   const handlePostTippni = async () => {
     if (!tweetText.trim() && !imageFile) {
       toast.error("Post cannot be empty")
@@ -55,15 +53,11 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
 
     try {
       setIsPosting(true)
-
-      // Convert image (if exists) to base64 string
       let base64Images: string[] = []
       if (imageFile) {
         const base64 = await toBase64(imageFile)
         base64Images = [base64]
       }
-
-      // Build request body
       const payload = {
         request: {
           text: tweetText.trim(),
@@ -77,8 +71,6 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
         files: [],
       }
       console.log("📦 Sending Tippni payload:", dummyPayload)
-
-      // ✅ Fetch API call (only fetch)
       const res = await fetch("https://api.tippni.com/api/v1/tippni", {
         method: "POST",
         headers: {
@@ -100,7 +92,7 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
       console.log("✅ Tippni post success:", data)
       toast.success("Tippni posted successfully!")
 
-      // Reset state
+ 
       setTweetText("")
       setImageFile(null)
       setImagePreview(null)
@@ -112,8 +104,30 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
       setIsPosting(false)
     }
   }
+  const handlePost = async () => {
+    console.log('form works');
+    
+    const formData = new FormData();
 
-  // Close modal
+    const jsonBlob = new Blob(
+      [JSON.stringify({ text: "dazar text" })],
+      { type: "application/json" }
+    );
+
+    formData.append("request", jsonBlob);
+
+    fetch("https://api.tippni.com/api/v1/tippni", {
+      method: "POST",
+      headers: {
+        Authorization: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkYXphcmFsZ29mcmFtZUBnbWFpbC5jb20iLCJpYXQiOjE3NjMzNzgyMzIsImV4cCI6MTc2MzQ2NDYzMn0.36FIr3HglLcl54aE7l2TRAJkTx6OAHi3z8z6NqOxsXg"
+      },
+      body: formData,
+    })
+      .then(res => res.json())
+      .then(res => console.log("Response:", res))
+      .then(data => console.log("Response:", data))
+      .catch(err => console.error("Error:", err));
+  }
   const handleClose = () => {
     setTweetText("")
     setImageFile(null)
@@ -196,7 +210,7 @@ export default function TippniModal({ open, onOpenChange }: ComposeTweetModalPro
                 </div>
 
                 <Button
-                  onClick={handlePostTippni}
+                  onClick={handlePost}
                   disabled={isPosting || (!tweetText.trim() && !imageFile)}
                   size="lg"
                   className="rounded-full px-8 font-semibold bg-[var(--color-accent)] text-white hover:opacity-90 transition"

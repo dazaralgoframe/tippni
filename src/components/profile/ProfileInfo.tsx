@@ -25,7 +25,11 @@ interface Profile {
   profileId?: string
 }
 
-export default function ProfileInfo() {
+interface ProfileInfoProps {
+  setShowConnections: (query: string) => void
+}
+
+export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
   const { data: session, status } = useSession()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -34,7 +38,10 @@ export default function ProfileInfo() {
   const [editOpen, setEditOpen] = useState(false)
 
 
-  // ✅ Fetch user profile
+  
+  useEffect(() => {
+    fetchProfile()
+  }, [])
   const fetchProfile = async () => {
     try {
       const res = await api.get("/api/v1/profiles/me")
@@ -47,10 +54,6 @@ export default function ProfileInfo() {
       setLoading(false)
     }
   }
-  useEffect(() => {
-    fetchProfile()
-  }, [])
-
   // ✅ Handle avatar upload
   const handleAvatarEditClick = () => {
     fileInputRef.current?.click()
@@ -204,17 +207,17 @@ export default function ProfileInfo() {
         {/* Stats */}
         <div className="flex gap-6 text-sm">
           <div>
-            <span className="font-bold">{profile.followees}</span>
+            <span className="font-bold">0</span>
             <span className="text-muted-foreground ml-1">Post</span>
           </div>
-          <div>
-            <span className="font-bold">{profile.followees}</span>
-            <span className="text-muted-foreground ml-1">Following</span>
-          </div>
-          <div>
+          <button onClick={() => setShowConnections("followers")}>
             <span className="font-bold">{profile.followers}</span>
             <span className="text-muted-foreground ml-1">Followers</span>
-          </div>
+          </button>
+          <button onClick={() => setShowConnections("following")}>
+            <span className="font-bold">{profile.followees}</span>
+            <span className="text-muted-foreground ml-1">Following</span>
+          </button>
         </div>
       </div>
       <EditProfileModal
