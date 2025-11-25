@@ -96,11 +96,15 @@ export default function ProfilePage() {
               <AvatarImage src={profile.bannerUrl} alt={profile.username} />
               <AvatarFallback>No Banner</AvatarFallback>
             </Avatar>
-
+            {isUploadingBanner && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+                <Loader width={30} height={30} />
+              </div>
+            )}
             <Button
               onClick={() => fileInputRefBanner.current?.click()}
               disabled={isUploadingBanner}
-              className="absolute bottom-3 right-3 p-2 bg-white text-accent rounded-full border border-border shadow-sm"
+              className="absolute bottom-3 right-3 p-2 bg-white text-accent rounded-full border border-border shadow-sm cursor-pointer"
             >
               <Edit2 className={`w-4 h-4 ${isUploadingBanner ? "animate-pulse" : ""}`} />
             </Button>

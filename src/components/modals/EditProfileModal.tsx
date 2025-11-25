@@ -1,3 +1,5 @@
+// src/components/modals/EditProfileModal.tsx
+
 "use client"
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogOverlay } from "@/components/ui/dialog"
@@ -7,6 +9,8 @@ import { Calendar, Globe, MapPin, Mail, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { api } from "@/lib/axios"
+import { useDispatch } from "react-redux"
+import { fetchMyProfile } from "@/store/profileSlice"
 
 interface EditProfileModalProps {
   open: boolean
@@ -21,10 +25,9 @@ interface EditProfileModalProps {
     birthDate?: string
     profileId?: string
   } | null
-  onProfileUpdated: () => void // ✅ callback to refresh parent profile
 }
 
-export default function EditProfileModal({ open, onOpenChange, profile, onProfileUpdated }: EditProfileModalProps) {
+export default function EditProfileModal({ open, onOpenChange, profile }: EditProfileModalProps) {
   const [formData, setFormData] = useState({
     username: "",
     bio: "",
@@ -33,6 +36,7 @@ export default function EditProfileModal({ open, onOpenChange, profile, onProfil
     birthDate: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
   const profileID = profile?.profileId
   console.log('profileID', profileID);
   console.log('profile edit profile', profile);
@@ -62,7 +66,8 @@ export default function EditProfileModal({ open, onOpenChange, profile, onProfil
       const res = await api.patch(`/api/v1/profiles/${profileID}`, formData)
       toast.success("✅ Profile updated successfully!")
       console.log('res edit profile', res.data);
-      onProfileUpdated()
+      // onProfileUpdated()
+      dispatch(fetchMyProfile() as any)
       onOpenChange(false)
     } catch (err: any) {
       console.error("Profile update failed:", err)

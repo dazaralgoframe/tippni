@@ -12,6 +12,8 @@ import EditProfileModal from "../modals/EditProfileModal"
 import { useSelector } from "react-redux"
 import { RootState } from "@/store"
 import { Loader } from "../ui/loader"
+import { useDispatch } from "react-redux"
+import { fetchMyProfile } from "@/store/profileSlice"
 
 interface Profile {
   id: string
@@ -33,7 +35,7 @@ interface ProfileInfoProps {
 }
 
 export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
-  
+  const dispatch = useDispatch()
   const profile = useSelector((state: RootState) => state.profile.data)
   const { data: session, status } = useSession()
   // const [profile, setProfile] = useState<Profile | null>(null)
@@ -49,44 +51,43 @@ export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
     fileInputRef.current?.click()
   }
 
-  // const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0]
-  //   if (!file) return
-
-  //   if (file.size > 1024 * 1024) {
-  //     toast.error("File must be smaller than 1MB")
-  //     e.target.value = ""
-  //     return
-  //   }
-
-  //   const formData = new FormData()
-  //   formData.append("file", file)
-  //   console.log('image FormData', file);
-    
-  //   try {
-  //     setIsUploading(true)
-  //     const res = await api.post("/api/v1/profiles/images/avatar", formData, {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     })
-
-  //     await fetchProfile()
-
-  //     // ✅ Force reload avatar from server (cache-bust)
-  //     setProfile((prev) =>
-  //       prev
-  //         ? { ...prev, avatarUrl: `${prev.avatarUrl}?t=${Date.now()}` }
-  //         : prev
-  //     )
-  //   } catch (err: any) {
-  //     console.error("Upload error:", err)
-  //     toast.error(err.response?.data?.message || "Failed to upload image.")
-  //   } finally {
-  //     setIsUploading(false)
-  //     e.target.value = ""
-  //   }
-  // }
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+  
+    if (file.size > 1024 * 1024) {
+      toast.error("File must be smaller than 1MB")
+      e.target.value = ""
+      return
+    }
+  
+    const formData = new FormData()
+    formData.append("file", file)
+  
+    try {
+      setIsUploading(true)
+  
+      await api.post("/api/v1/profiles/images/avatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+  
+      toast.success("Avatar updated!")
+  
+      // 🔥 refresh redux profile
+      setTimeout(() => {
+        dispatch(fetchMyProfile() as any)
+      }, 200)
+  
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to upload avatar.")
+    } finally {
+      setIsUploading(false)
+      e.target.value = ""
+    }
+  }
+  
 
   const handleChangeBanner = async () => {
     toast.info("Edit profile modal coming soon…")
@@ -114,40 +115,41 @@ export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
               />
               <AvatarFallback>{profile.username || "U"}</AvatarFallback>
             </Avatar>
-
-            {/* Edit icon overlay */}
-            <button
+            {isUploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+                <Loader width={30} height={30} />
+              </div>
+            )}
+            <Button
               onClick={handleAvatarEditClick}
-              className="absolute bottom-2 right-2 p-1 bg-white rounded-full border border-border shadow-sm hover:bg-accent/10 transition"
+              className="absolute bottom-2 right-2 w-7 h-7 p-1 bg-white rounded-full border border-border shadow-sm hover:bg-accent/10 transition cursor-pointer"
               disabled={isUploading}
             >
               <Edit2
-                className={`w-3 h-3 ${
+                className={`w-1 h-1 ${
                   isUploading ? "animate-pulse text-accent" : "text-accent"
                 }`}
               />
-            </button>
+            </Button>
 
-            {/* Hidden file input */}
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
               className="hidden"
-              // onChange={handleAvatarChange}
+              onChange={handleAvatarChange}
             />
           </div>
 
           <Button
             variant="outline"
-            className="rounded-full bg-transparent self-end"
+            className="rounded-full bg-transparent self-end cursor-pointer"
             onClick={() => setEditOpen(true)}
           >
             Edit Profile
           </Button>
         </div>
 
-        {/* Name and Handle */}
         <div className="mb-2">
           <h1 className="text-2xl font-bold capitalize">{profile.username}</h1>
           <p className="text-muted-foreground hidden">@{profile.username}</p>
@@ -202,12 +204,12 @@ export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
           </button>
         </div>
       </div>
-      {/* <EditProfileModal
+      <EditProfileModal
         open={editOpen}
         onOpenChange={setEditOpen}
         profile={profile}
-        onProfileUpdated={fetchProfile}
-      /> */}
+        // onProfileUpdated={fetchProfile}
+      />
     </>
   )
 }
