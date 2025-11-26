@@ -8,11 +8,16 @@ import { Clock, Search } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/lib/axios"
 import { Loader } from "../ui/loader"
+import { useDispatch } from "react-redux"
+import { fetchProfileByUsername } from "@/store/profileSlice"
+import { setPage } from "@/store/pageSlice"
+
 
 interface UserProfile {
   id: string
   name: string
   username: string
+  profileId: string
   avatarUrl?: string
   followers: number
   following: number
@@ -35,7 +40,17 @@ export function SearchResultsDropdown({
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(false)
   const [followingState, setFollowingState] = useState<Record<string, boolean>>({})
+  const dispatch = useDispatch()
 
+
+  const openUserProfile = (profileId: string) => {
+    console.log('SearchResultsDropdown username =>', profileId);
+    dispatch(fetchProfileByUsername(profileId) as any)       // Load that user's profile
+    dispatch(setPage("profile"))               // Switch to ProfilePage
+    onClose()                                  // Close the dropdown
+    alert('clicked user from search')
+    
+  }
   // ✅ Fetch from API when search query changes
   useEffect(() => {
     const fetchUsers = async () => {
@@ -49,13 +64,14 @@ export function SearchResultsDropdown({
         const res = await api.get(
           `/api/v1/profiles/?username=${encodeURIComponent(searchQuery)}&page=0&size=10&sort=`
         )
-        console.log(res.data.content);
+        
         
         const data = res.data?.content || res.data || []
-
+        console.log('SearchResultsDropdown search content', res.data.content);
         // Normalize the API data
         const formatted = data.map((user: any, index: number) => ({
           id: user.id ?? `user=${index}`,
+          profileId: user.profileId,
           name: user.name || user.username || "Unknown User",
           username: user.username ? `${user.username}` : "",
           avatarUrl: user.avatarUrl,
@@ -83,7 +99,8 @@ export function SearchResultsDropdown({
       [userId]: !prev[userId],
     }))
   }
-
+  console.log('SearchResultsDropdown userlist => ', users);
+  
   return (
     <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-2xl border border-border bg-modal shadow-lg max-w-100 m-auto">
       {searchQuery.trim() === "" ? (
@@ -126,7 +143,8 @@ export function SearchResultsDropdown({
           {users.map((user) => (
             <div
               key={user.id}
-              className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 hover:bg-accent transition-colors"
+              onClick={() => openUserProfile(user.profileId)}
+              className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 hover:bg-accent transition-colors cursor-pointer"
             >
               <div className="flex flex-1 items-center gap-3 min-w-0">
                 <Avatar className="size-10 flex-shrink-0">

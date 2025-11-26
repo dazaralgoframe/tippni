@@ -18,7 +18,7 @@ export default function ProfileHeader({username}: ProfileHeaderProps) {
       </Button>
       <div>
         <h2 className="text-xl font-bold capitalize">{username}</h2>
-        <p className="text-xs text-muted-foreground">1,234 posts</p>
+        <p className="text-xs text-muted-foreground hidden">1,234 posts</p>
       </div>
     </div>
   )

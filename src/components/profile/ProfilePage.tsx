@@ -22,9 +22,15 @@ export default function ProfilePage() {
   const dispatch = useDispatch()
   
   // Redux state
-  const { data: profile, loading } = useSelector(
+  const { data: myProfile, selectedUser, loading } = useSelector(
     (state: RootState) => state.profile
   )
+
+  console.log('search result selectedUser => ', selectedUser);
+  
+  // Decide which profile to show
+  const profile = selectedUser || myProfile
+  const isOwnProfile = profile?.username === myProfile?.username
 
   const [activeTab, setActiveTab] = useState("posts")
   const [isUploadingBanner, setIsUploadingBanner] = useState(false)
@@ -33,8 +39,10 @@ export default function ProfilePage() {
 
   // Load profile from API using Redux
   useEffect(() => {
-    dispatch(fetchMyProfile() as any)
-  }, [])
+    if (!selectedUser) {
+      dispatch(fetchMyProfile() as any)
+    }
+  }, [selectedUser])
 
   // Banner upload
   const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +81,8 @@ export default function ProfilePage() {
       </div>
     )
   }
-
+  console.log('search result profile => ', profile);
+  
   return (
     <main className="col-span-12 lg:col-span-6">
       {showConnections ? (
@@ -101,13 +110,15 @@ export default function ProfilePage() {
                 <Loader width={30} height={30} />
               </div>
             )}
-            <Button
+            {isOwnProfile &&
+              <Button
               onClick={() => fileInputRefBanner.current?.click()}
               disabled={isUploadingBanner}
               className="absolute bottom-3 right-3 p-2 bg-white text-accent rounded-full border border-border shadow-sm cursor-pointer"
-            >
-              <Edit2 className={`w-4 h-4 ${isUploadingBanner ? "animate-pulse" : ""}`} />
-            </Button>
+              >
+                <Edit2 className={`w-4 h-4 ${isUploadingBanner ? "animate-pulse" : ""}`} />
+              </Button>
+            }
 
             <input
               ref={fileInputRefBanner}

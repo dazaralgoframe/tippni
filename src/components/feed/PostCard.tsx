@@ -28,6 +28,8 @@ type PostCardProps = {
 }
 
 export default function PostCard({ post }: PostCardProps) {
+  console.log('post from PostCard => ', post);
+  
   const username = post.profile?.username || "Unknown"
   const handle = `@${username}`
   const avatarUrl = post.profile?.avatarUrl
@@ -86,7 +88,7 @@ export default function PostCard({ post }: PostCardProps) {
     }
   }
   return (
-    <Card className="border-none shadow-md p-5 pb-0 rounded-xl" style={{ background: '#2AA3EF0A' }} >
+    <Card className="border-none shadow-md p-5 pb-0 rounded-xl" style={{ background: '#2AA3EF0A' }} key={postId}>
       <div className="flex items-start gap-3">
         <Avatar className="size-10">
           <AvatarImage src={avatarUrl || "/images/default-avatar.png"} alt={`${username} avatar`} />
@@ -140,12 +142,30 @@ export default function PostCard({ post }: PostCardProps) {
       
         <div className="px-6 mt-3">
           {imageSrc && (
+            // <Image
+            //   width={100}
+            //   height={100}
+            //   src={imageSrc || ''}
+            //   alt="Post media"
+            //   className="w-full h-50 rounded-3xl"
+            // />
             <Image
-              width={1000}
-              height={600}
-              src={imageSrc || ''}
+              src={imageSrc}
               alt="Post media"
-              className="w-full h-auto rounded-3xl"
+              width={2000}
+              height={1200}
+              quality={80}
+              sizes="(max-width: 480px) 100vw,
+                    (max-width: 768px) 100vw,
+                    (max-width: 1200px) 80vw,
+                    400px"
+              className="
+              rounded-3xl w-full h-auto 
+              max-h-[300px] 
+              md:max-h-[300px] 
+              lg:max-h-[350px] 
+              object-cover
+              "
             />
           )}
           <div className="flex items-center justify-between px-4 py-3 text-muted-foreground">
@@ -154,10 +174,10 @@ export default function PostCard({ post }: PostCardProps) {
           <Action
             label="Favorite"
             icon={
-              <Button onClick={toggleLike} className="flex items-center gap-1 cursor-pointer p-0" variant="link">
-                {liked ? <FilledHeartIcon /> : <HeartIcon stroke={svgStrokeColor} />}
-                <span className="text-xs">{likes}</span>
-              </Button>
+              <div onClick={toggleLike} className="flex items-center gap-1 cursor-pointer p-0">
+                {liked ? <FilledHeartIcon stroke='red' /> : <HeartIcon stroke={svgStrokeColor} />}
+                <span className="text-sm">{likes}</span>
+              </div>
             }
           />
           <Action label="Bookmark" icon={<BookmarkIcon stroke={svgStrokeColor} />} />
@@ -214,9 +234,14 @@ const HeartIcon = ({ stroke }: any) => (
   </svg>
 )
 
-const FilledHeartIcon = () => (
+const FilledHeartIcon = ({ stroke }: any) => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="red">
-    <path d="M3.5983 5.265C3.25008 5.61322 2.97385 6.02662 2.78539 6.48159C2.59694 6.93657 2.49994 7.42421 2.49994 7.91667C2.49994 8.40913 2.59694 8.89677 2.78539 9.35174C2.97385 9.80671 3.25008 10.2201 3.5983 10.5683L9.99997 16.97L16.4016 10.5683C17.1049 9.86507 17.5 8.91123 17.5 7.91667C17.5 6.9221 17.1049 5.96827 16.4016 5.265C15.6984 4.56173 14.7445 4.16664 13.75 4.16664C12.7554 4.16664 11.8016 4.56173 11.0983 5.265L9.99997 6.36333L8.90164 5.265C8.55342 4.91677 8.14002 4.64055 7.68505 4.45209C7.23007 4.26363 6.74243 4.16663 6.24997 4.16663C5.75751 4.16663 5.26987 4.26363 4.8149 4.45209C4.35992 4.64055 3.94652 4.91677 3.5983 5.265V5.265Z" />
+    <path d="M3.5983 5.265C3.25008 5.61322 2.97385 6.02662 2.78539 6.48159C2.59694 6.93657 2.49994 7.42421 2.49994 7.91667C2.49994 8.40913 2.59694 8.89677 2.78539 9.35174C2.97385 9.80671 3.25008 10.2201 3.5983 10.5683L9.99997 16.97L16.4016 10.5683C17.1049 9.86507 17.5 8.91123 17.5 7.91667C17.5 6.9221 17.1049 5.96827 16.4016 5.265C15.6984 4.56173 14.7445 4.16664 13.75 4.16664C12.7554 4.16664 11.8016 4.56173 11.0983 5.265L9.99997 6.36333L8.90164 5.265C8.55342 4.91677 8.14002 4.64055 7.68505 4.45209C7.23007 4.26363 6.74243 4.16663 6.24997 4.16663C5.75751 4.16663 5.26987 4.26363 4.8149 4.45209C4.35992 4.64055 3.94652 4.91677 3.5983 5.265V5.265Z"
+    stroke={stroke}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      />
   </svg>
 )
 

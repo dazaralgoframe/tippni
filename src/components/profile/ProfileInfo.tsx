@@ -36,7 +36,13 @@ interface ProfileInfoProps {
 
 export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
   const dispatch = useDispatch()
-  const profile = useSelector((state: RootState) => state.profile.data)
+  const { data: myProfile, selectedUser } = useSelector(
+    (state: RootState) => state.profile
+  )
+  
+  const profile = selectedUser || myProfile
+  const isOwnProfile = profile?.username === myProfile?.username
+
   const { data: session, status } = useSession()
   // const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -120,17 +126,19 @@ export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
                 <Loader width={30} height={30} />
               </div>
             )}
-            <Button
-              onClick={handleAvatarEditClick}
-              className="absolute bottom-2 right-2 w-7 h-7 p-1 bg-white rounded-full border border-border shadow-sm hover:bg-accent/10 transition cursor-pointer"
-              disabled={isUploading}
-            >
-              <Edit2
-                className={`w-1 h-1 ${
-                  isUploading ? "animate-pulse text-accent" : "text-accent"
-                }`}
-              />
-            </Button>
+            {isOwnProfile && 
+              <Button
+                onClick={handleAvatarEditClick}
+                className="absolute bottom-2 right-2 w-7 h-7 p-1 bg-white rounded-full border border-border shadow-sm hover:bg-accent/10 transition cursor-pointer"
+                disabled={isUploading}
+              >
+                <Edit2
+                  className={`w-1 h-1 ${
+                    isUploading ? "animate-pulse text-accent" : "text-accent"
+                  }`}
+                />
+              </Button>
+            }
 
             <input
               ref={fileInputRef}
@@ -141,13 +149,23 @@ export default function ProfileInfo({setShowConnections}: ProfileInfoProps) {
             />
           </div>
 
-          <Button
-            variant="outline"
-            className="rounded-full bg-transparent self-end cursor-pointer"
-            onClick={() => setEditOpen(true)}
-          >
-            Edit Profile
-          </Button>
+          {isOwnProfile ? (
+            <Button
+              variant="outline"
+              className="rounded-full bg-transparent self-end cursor-pointer"
+              onClick={() => setEditOpen(true)}
+            >
+              Edit Profile
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className="rounded-full bg-accent text-white self-end cursor-pointer"
+              onClick={() => toast.success(`Follow ${profile.username}`)}
+            >
+              Follow
+            </Button>
+          )}
         </div>
 
         <div className="mb-2">

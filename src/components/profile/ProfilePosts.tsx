@@ -129,7 +129,7 @@ export default function ProfilePosts({ tab, profileId }: ProfilePostsProps) {
     <div className="space-y-4 py-4">
       {posts.map((post) => (
         <PostCard
-          // key={post.id}
+          key={post.id}
           // username={post.profile?.username}
           // handle={`@${post.profile?.username}`}
           // text={post.text}
