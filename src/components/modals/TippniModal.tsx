@@ -1,4 +1,4 @@
-// src/components/LeftSidebar.tsx
+// src/components/modals/TippniModal.tsx
 
 "use client"
 

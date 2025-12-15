@@ -32,6 +32,7 @@ import DustDeleteWrapper from "@/components/animations/DustDeleteWrapper"
 import ConfirmModal from "../common/ConfirmModal"
 import { toggleRepost } from "@/store/repostSlice"
 import { Action, BookmarkIcon, FilledHeartIcon, ForwardIcon, HeartIcon, ReplyIcon } from "@/components/common/PostActions"
+import ReplyModal from "@/components/feed/ReplyModal"
 
 
 type PostCardProps = {
@@ -69,6 +70,9 @@ export default function PostCard({ post }: PostCardProps) {
   
 
   const isOwner = originalPost.isBelongs;
+
+  const [showReplyModal, setShowReplyModal] = useState(false);
+
 
   useEffect(() => {
     if (textRef.current) {
@@ -144,6 +148,20 @@ export default function PostCard({ post }: PostCardProps) {
       toast.success(isRepostedByUser ? "Undo repost" : "Reposted!");
     } catch (err) {
       toast.error("Repost action failed");
+    }
+  };
+  
+  const handleReplySubmit = async (text: string, files: File[]) => {
+    try {
+      const form = new FormData();
+      form.append("text", text);
+      files.forEach((f) => form.append("media", f));
+      console.log('formData after reply', form);
+      
+      // await api.post(`/api/v1/comment/${postId}`, form);
+      toast.success("Reply posted!");
+    } catch (err) {
+      toast.error("Failed to post reply");
     }
   };
   
@@ -292,7 +310,14 @@ export default function PostCard({ post }: PostCardProps) {
 
           {/* YOUR ICONS AREA */}
           <div className="flex items-center justify-between px-4 py-3 text-muted-foreground">
-            <Action label="Reply" icon={<ReplyIcon stroke={svgStrokeColor} />} />
+            <Action
+              label="Reply"
+              icon={
+                <div onClick={() => setShowReplyModal(true)}>
+                  <ReplyIcon stroke={svgStrokeColor} />
+                </div>
+              }
+            />
             <Action
               label="Forward"
               icon={
@@ -325,6 +350,14 @@ export default function PostCard({ post }: PostCardProps) {
       onCancel={() => setShowDeleteModal(false)}
       onConfirm={confirmDelete}
       confirmText = 'Delete'
+    />
+    <ReplyModal
+      open={showReplyModal}
+      onClose={() => setShowReplyModal(false)}
+      onSubmit={handleReplySubmit}
+      replyingTo={originalPost.profile?.username || "user"}
+      avatarUrl={currentUser?.avatarUrl}
+      mediaUrls={originalPost.mediaUrls?.[0] ?? ""}
     />
     </DustDeleteWrapper>
   )
